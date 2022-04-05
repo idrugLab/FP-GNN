@@ -17,7 +17,7 @@ def training(args,log):
     for num_fold in range(args.num_folds):
         info(f'Seed {args.seed}')
         args.seed = seed_first + num_fold
-        args.save_path = os.path.join(save_path,'hyper_result.txt')
+        args.save_path = os.path.join(save_path,f'Seed_{args.seed}')
         mkdir(args.save_path)
         
         fold_score = fold_train(args,log)
