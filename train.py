@@ -17,7 +17,7 @@ def training(args,log):
     for num_fold in range(args.num_folds):
         info(f'Seed {args.seed}')
         args.seed = seed_first + num_fold
-        args.save_path = os.path.join(save_path,f'Seed_{args.seed}')
+        args.save_path = os.path.join(save_path, f'Seed_{args.seed}')
         mkdir(args.save_path)
         
         fold_score = fold_train(args,log)
@@ -29,14 +29,17 @@ def training(args,log):
     if args.num_folds > 1:
         for num_fold, fold_score in enumerate(score):
             info(f'Seed {seed_first + num_fold} : test {args.metric} = {np.nanmean(fold_score):.6f}')
-    score = np.nanmean(score, axis=1)
-    score_ave = np.nanmean(score)
-    score_std = np.nanstd(score)
+            if args.task_num > 1:
+                for one_name,one_score in zip(args.task_names,fold_score):
+                    info(f'    Task {one_name} {args.metric} = {one_score:.6f}')
+    ave_task_score = np.nanmean(score, axis=1)
+    score_ave = np.nanmean(ave_task_score)
+    score_std = np.nanstd(ave_task_score)
     info(f'Average test {args.metric} = {score_ave:.6f} +/- {score_std:.6f}')
     
     if args.task_num > 1:
         for i,one_name in enumerate(args.task_names):
-            info(f'Average test {one_name} {args.metric} = {np.nanmean(score[:, i]):.6f} +/- {np.nanstd(score[:, i]):.6f}')
+            info(f'    average all-fold {one_name} {args.metric} = {np.nanmean(score[:, i]):.6f} +/- {np.nanstd(score[:, i]):.6f}')
     
     return score_ave,score_std
 
